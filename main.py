@@ -1,4 +1,5 @@
 import sys
+import json
 from algosdk.v2client import *
 from algosdk import account
 from algosdk.future import transaction
@@ -45,16 +46,14 @@ def Create_ASA_TXN(total,assetname,unitname,decimals,url):
         sp = transaction.SuggestedParams(fee, first_valid_round,last_valid_round,gh)
         # get last block info
         block_info = algod_client.block_info(sp.first)
-        # print("Block", sp.first, "info:", json.dumps(block_info, indent=2), "\n")
-        assetid = block_info["block"]["tc"]+1
-        #metadata = bytes("fACPO4nRgO55j1ndAK3W6Sgc4APkcyFa", "ascii") # should be a 32-byte hash
-    
+        # print("Block", sp.first, "info:", json.dumps(block_info, indent=2), "\n")    
         txn,err = transaction.AssetConfigTxn(address, sp, total=total, manager=address,
                     reserve=address, freeze=address, clawback=address,
                     unit_name=unitname, asset_name=assetname, url=url,decimals=decimals,
                     default_frozen=False),None
         signed = txn.sign(private_key)
         txid = algod_client.send_transaction(signed)
+        assetid = block_info["block"]["tc"]+1
         return txid, err, assetid
     except Exception as e:
         txid, err = e, e
@@ -62,17 +61,30 @@ def Create_ASA_TXN(total,assetname,unitname,decimals,url):
         return txid, err, assetid
 
 def main():
-    assetname = parser.get("XET_params","assetName")
-    unitname = parser.get("XET_params","unitName")
-    total = parser.get("XET_params","total_supply")
-    fractions = parser.get("XET_params","decimals")
-    url = parser.get("XET_params","url")
-    total,fractions = int(total), int(fractions)
-    txid,err,assetid = Create_ASA_TXN(total=total, assetname=assetname, unitname=unitname, decimals=fractions, url=url)
-    if err :
-        content = {"Message":str(err)}
-        print(content)
-    print("Transaction ID: " + str(txid) + "\n")
+    try:
+        assetname = parser.get("XET_params","assetName")
+        unitname = parser.get("XET_params","unitName")
+        total = parser.get("XET_params","total_supply")
+        fractions = parser.get("XET_params","decimals")
+        url = parser.get("XET_params","url")
+        total,fractions = int(total), int(fractions)
+        txid,err,assetid = Create_ASA_TXN(total=total, assetname=assetname, unitname=unitname, decimals=fractions, url=url)
+        data = {}
+        data["txid"],data["asset_id"] = txid,assetid
+
+        # Writing Values into the persistent file
+        data = json.dumps(data,indent=4)
+        with open("asset_details.json", "w") as outfile:
+            outfile.write(data)
+
+        if err :
+            content = {"Message":str(err)}
+            print(content)
+        print("Transaction ID: " + str(txid) + "\n")
+        print("Asset Id: "+ str(assetid) + "\n")
+
+    except Exception as e:
+        print(e)
 
 # Main Function 
 main()
