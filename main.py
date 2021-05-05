@@ -53,7 +53,9 @@ def Create_ASA_TXN(total,assetname,unitname,decimals,url):
                     default_frozen=False),None
         signed = txn.sign(private_key)
         txid = algod_client.send_transaction(signed)
-        assetid = block_info["block"]["tc"]+1
+        wait_for_confirmation(algod_client,txid)
+        ptx = algod_client.pending_transaction_info(txid)
+        assetid = ptx["asset-index"]
         return txid, err, assetid
     except Exception as e:
         txid, err = e, e
