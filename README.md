@@ -9,9 +9,11 @@ Summary:-
 
 All the functions are included in the "main.py" file. And all the configuration parameters are included in "config.cfg" file.(Note:- Code was set to deploy the token in testnetwork, will be changed into mainnet). Once the Asset is created, transactionId and assetId will be stored into a "asset_details.json" file.
 
-Steps to implement:-
+## 🛠 Steps to Implement
 
-1. Install python with miniconda or Python Virtual Environment.
-2. Install python 3.6+
-3. pip install -r requirements
-4. python main.py
+```python
+git clone https://github.com/xfinite-io/XET
+cd XET
+pip3 install -r requirements.txt
+python3 main.py
+```
