@@ -13,5 +13,5 @@ Steps to implement:-
 
 1. Install python with miniconda or Python Virtual Environment.
 2. Install python 3.6+
-3. pip install -r requirements
+3. pip install -r requirements.txt
 4. python main.py
