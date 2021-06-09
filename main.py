@@ -35,7 +35,7 @@ def wait_for_confirmation(client, txid):
     return txinfo
 
 # Creating Algorand Standard Asset
-def Create_ASA_TXN(total,assetname,unitname,decimals,url):
+def Create_ASA_TXN(total,assetname,unitname,decimals,url,freezeState):
     try:
         algod_client = network_client()
         private_key = parser.get('ALGOD_test_params', 'private_key')
@@ -50,7 +50,7 @@ def Create_ASA_TXN(total,assetname,unitname,decimals,url):
         txn,err = transaction.AssetConfigTxn(address, sp, total=total, manager=address,
                     reserve=address, freeze=address, clawback=address,
                     unit_name=unitname, asset_name=assetname, url=url,decimals=decimals,
-                    default_frozen=False),None
+                    default_frozen=freezeState),None
         signed = txn.sign(private_key)
         txid = algod_client.send_transaction(signed)
         wait_for_confirmation(algod_client,txid)
@@ -69,8 +69,9 @@ def main():
         total = parser.get("XET_params","total_supply")
         fractions = parser.get("XET_params","decimals")
         url = parser.get("XET_params","url")
+        freezestate = parser.get("XET_params","freezeState")
         total,fractions = int(total), int(fractions)
-        txid,err,assetid = Create_ASA_TXN(total=total, assetname=assetname, unitname=unitname, decimals=fractions, url=url)
+        txid,err,assetid = Create_ASA_TXN(total=total, assetname=assetname, unitname=unitname, decimals=fractions, url=url, freezeState=freezestate)
         data = {}
         data["txid"],data["asset_id"] = txid,assetid
 
