@@ -8,10 +8,8 @@ parser = ConfigParser()
 
 parser.read('config.cfg')
 
-def network_client():
+def network_client(algod_address, algod_token):
     try:
-        algod_address = parser.get('ALGOD_test_params', 'algod_address')
-        algod_token = parser.get('ALGOD_test_params', 'algod_token')
         headers = {
         "X-API-Key": algod_token,
         }
@@ -31,13 +29,14 @@ def wait_for_confirmation(client, txid):
         last_round += 1
         client.status_after_block(last_round)
         txinfo = client.pending_transaction_info(txid)
-    # print("Transaction {} confirmed in round {}.".format(txid, txinfo.get('confirmed-round')))
     return txinfo
 
 # Creating Algorand Standard Asset
-def Create_ASA_TXN(total,assetname,unitname,decimals,url,freezeState):
+def create_asa_txn(total,assetname,unitname,decimals,url,freezeState):
     try:
-        algod_client = network_client()
+        algod_address = parser.get('ALGOD_test_params', 'algod_address')
+        algod_token = parser.get('ALGOD_test_params', 'algod_token')
+        algod_client = network_client(algod_address, algod_token)
         private_key = parser.get('ALGOD_test_params', 'private_key')
         address = account.address_from_private_key(private_key)
         params = algod_client.suggested_params()
@@ -66,12 +65,11 @@ def main():
     try:
         assetname = parser.get("XET_params","assetName")
         unitname = parser.get("XET_params","unitName")
-        total = parser.get("XET_params","total_supply")
-        fractions = parser.get("XET_params","decimals")
+        total = parser.getint("XET_params","total_supply")
+        fractions = parser.getint("XET_params","decimals")
         url = parser.get("XET_params","url")
         freezestate = parser.get("XET_params","freezeState")
-        total,fractions = int(total), int(fractions)
-        txid,err,assetid = Create_ASA_TXN(total=total, assetname=assetname, unitname=unitname, decimals=fractions, url=url, freezeState=freezestate)
+        txid,err,assetid = create_asa_txn(total=total, assetname=assetname, unitname=unitname, decimals=fractions, url=url, freezeState=freezestate)
         data = {}
         data["txid"],data["asset_id"] = txid,assetid
 
