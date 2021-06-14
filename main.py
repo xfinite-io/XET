@@ -1,11 +1,14 @@
 import sys
+import os
 import json
 from algosdk.v2client import *
 from algosdk import account
 from algosdk.future import transaction
 from configparser import ConfigParser
-parser = ConfigParser()
+from dotenv import load_dotenv
 
+parser = ConfigParser()
+load_dotenv('creds.env')
 parser.read('config.cfg')
 
 def network_client(algod_address, algod_token):
@@ -35,21 +38,18 @@ def wait_for_confirmation(client, txid):
 def create_asa_txn(total,assetname,unitname,decimals,url,freezeState):
     try:
         algod_address = parser.get('ALGOD_test_params', 'algod_address')
-        algod_token = parser.get('ALGOD_test_params', 'algod_token')
+        algod_token = os.getenv('algod_token')
         algod_client = network_client(algod_address, algod_token)
-        private_key = parser.get('ALGOD_test_params', 'private_key')
+        private_key = os.getenv('private_key')
         address = account.address_from_private_key(private_key)
         params = algod_client.suggested_params()
         gh, first_valid_round, last_valid_round = params.gh, params.first, params.last
         fee = 1000
-        sp = transaction.SuggestedParams(fee, first_valid_round,last_valid_round,gh)
-        # get last block info
-        block_info = algod_client.block_info(sp.first)
-        # print("Block", sp.first, "info:", json.dumps(block_info, indent=2), "\n")    
+        sp = transaction.SuggestedParams(fee, first_valid_round,last_valid_round,gh) 
         txn,err = transaction.AssetConfigTxn(address, sp, total=total, manager=address,
-                    reserve=address, freeze=address, clawback=address,
+                    reserve=None, freeze=None, clawback=None,
                     unit_name=unitname, asset_name=assetname, url=url,decimals=decimals,
-                    default_frozen=freezeState),None
+                    strict_empty_address_check=False, default_frozen=freezeState),None
         signed = txn.sign(private_key)
         txid = algod_client.send_transaction(signed)
         wait_for_confirmation(algod_client,txid)
