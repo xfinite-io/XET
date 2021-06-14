@@ -2,8 +2,8 @@
 Final Parameters for the XET:-
 1. Total Supply of XET - 4,000,000,000 (i.e., 4 bn)
 2. Maximum Decimal Units - 9
-3. Name of the Asset - XET
-4. The unit name for the XET coin - Mzaalo
+3. Name of the Asset - Xfinite Entertainment Token
+4. The unit name of the Asset - XET
 
 Summary:-
 
