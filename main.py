@@ -65,7 +65,7 @@ def main():
     try:
         assetname = parser.get("XET_params","assetName")
         unitname = parser.get("XET_params","unitName")
-        total = parser.getint("XET_params","total_supply")
+        total = parser.getint("XET_params","totalSupply")
         fractions = parser.getint("XET_params","decimals")
         url = parser.get("XET_params","url")
         freezestate = parser.get("XET_params","freezeState")
