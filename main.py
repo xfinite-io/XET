@@ -68,7 +68,7 @@ def main():
         total = parser.getint("XET_params","totalSupply")
         fractions = parser.getint("XET_params","decimals")
         url = parser.get("XET_params","url")
-        freezestate = parser.get("XET_params","freezeState")
+        freezestate = parser.getboolean("XET_params","freezeState")
         txid,err,assetid = create_asa_txn(total=total, assetname=assetname, unitname=unitname, decimals=fractions, url=url, freezeState=freezestate)
         data = {}
         data["txid"],data["asset_id"] = txid,assetid
